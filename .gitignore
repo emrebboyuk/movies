@@ -1,0 +1,10 @@
+Pipfile
+Pipfile.lock
+data.db
+data.sqbpro
+/.venv
+__pycache__/
+.idea/
+.coverage
+.venv
+.env
