@@ -9,7 +9,7 @@ PollResults = Tuple[int, str, int, float]
 
 CREATE_POLLS = "CREATE TABLE IF NOT EXISTS polls (id SERIAL PRIMARY KEY, title TEXT, owner_username TEXT);"
 CREATE_OPTIONS = "CREATE TABLE IF NOT EXISTS options (id SERIAL PRIMARY KEY, option_text TEXT, poll_id INTEGER);"
-CREATE_VOTES = "CREATE TABLE IF NOT EXISTS votes (username TEXT, option_id INTEGER);"
+CREATE_VOTES = "CREATE TABLE IF NOT EXISTS votes (username TEXT, option_id INTEGER, vote_timestamp INTEGER);"
 
 
 SELECT_ALL_POLLS = "SELECT * FROM polls;"
@@ -30,7 +30,9 @@ INSERT_POLL_RETURN_ID = (
 INSERT_OPTION_RETURN_ID = (
     "INSERT INTO options (option_text, poll_id) VALUES (%s, %s) RETURNING id;"
 )
-INSERT_VOTE = "INSERT INTO votes (username, option_id) VALUES (%s, %s);"
+INSERT_VOTE = (
+    "INSERT INTO votes (username, option_id, vote_timestamp) VALUES (%s, %s, %s);"
+)
 
 
 @contextmanager
@@ -107,6 +109,6 @@ def get_votes_for_option(connection, option_id: int) -> List[Vote]:
         return cursor.fetchall()
 
 
-def add_poll_vote(connection, username: str, option_id: int):
+def add_poll_vote(connection, username: str, vote_timestamp: float, option_id: int):
     with get_cursor(connection) as cursor:
-        cursor.execute(INSERT_VOTE, (username, option_id))
+        cursor.execute(INSERT_VOTE, (username, option_id, vote_timestamp))
